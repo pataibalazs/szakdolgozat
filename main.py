@@ -18,38 +18,13 @@ import initialisationClass as initialC
 #import financeData as fd
 
 
-# app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-# database=db.dataBase()
-# models=tm.pretrainedModels()
-# homepage=hp.homepage(database,models)
-# homepage.timeUpdateCallback(app)
-# homepage.gaugeRefreshCallback(app)
-# homepage.updateGraphCallback(app)
-# homepage.predictionUpdateCallback(app)
-##dataMiningScript= fd.financeData(database,1600)
-
-#app.layout = homepage.layoutMaker()
-
 app=dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 init = initialC.initializationClass(app)
 init.callbackStarter()
 app.layout=init.layoutMaker()
 
+print("kakapuka")
+
 if __name__ == "__main__":
     app.run_server(debug=True)
 
-
-
-
-
-
-# def random(app):
-#     if __name__ == "__main__":
-#         app.run_server(debug=True)
-
-# t1 = Thread(target = dataMiningScript.dataMiningCycle())
-# t2 = Thread(target = random(app))
-
-
-# t1.start()
-# t2.start()
