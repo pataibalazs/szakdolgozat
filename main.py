@@ -24,6 +24,14 @@ init.callbackStarter()
 app.layout=init.layoutMaker()
 
 print("kakapuka")
+print("kakapuka")
+print("kakapuka")
+print("kakapuka")
+print("kakapuka")
+print("kakapuka")
+print("kakapuka")
+print("kakapuka")
+print("kakapuka")
 
 if __name__ == "__main__":
     app.run_server(debug=True)
