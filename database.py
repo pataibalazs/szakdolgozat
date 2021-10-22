@@ -69,6 +69,20 @@ class dataBase:
         self.connection.commit()
         mycursor.close()
 
+    def countRecords(self):
+        self.lock.acquire()
+        mycursor = self.connection.cursor() 
+        query_count=f"""select count(*) from allStock_temp"""
+        mycursor.execute(query_count,)
+        records = mycursor.fetchall()
+        self.connection.commit()
+
+
+        
+        mycursor.close()
+        self.lock.release()
+        return records[0][0]
+
     def avgInStockTable(self,name):
         self.lock.acquire()
         
@@ -144,11 +158,12 @@ class dataBase:
         self.lock.release()
         return values
     
-    def dataForGraph(self,name):
+    
+    def dataForGraphs(self,name):
         self.lock.acquire()
         mycursor = self.connection.cursor()
-        query=f"""SELECT btc_close,time FROM
-                (SELECT ID,btc_close,time
+        query=f"""SELECT btc_open,btc_close,btc_high,btc_low,time FROM
+                (SELECT ID,btc_open,btc_close,btc_high,btc_low,time
                 FROM {name}
                 group by time
                 ORDER BY ID DESC LIMIT 30) sub
@@ -158,49 +173,49 @@ class dataBase:
         self.connection.commit()
         mycursor.close()
         self.lock.release()
-        # value=[]
-        # time=[]
-        # for elem in records:
-        #     value.append(elem[0])
-        #     time.append(elem[1])
-
-        
-        #return value,time
         return records
-    
 
     def percentChange(self,lastValue,secondLastValue):
         return round((float(lastValue)-secondLastValue)/abs(secondLastValue),6)
 
-        
-
+    
     def dataForPrediction(self,name):
         self.lock.acquire()
         mycursor = self.connection.cursor() 
-
-        query=f"""SELECT btc_close,btc_high,btc_low FROM {name} ORDER BY ID DESC LIMIT 2;"""
+        query=f"""select btc_close,btc_high,btc_low from
+            (SELECT * FROM {name} ORDER BY id DESC LIMIT 3) sub
+            order by id 
+            limit 2"""
         mycursor.execute(query,)
         records = mycursor.fetchall()
                 
         self.connection.commit()
         mycursor.close()
 
-        #values=[records[0][0],records[1][0]]
         self.lock.release()
-        #values=[percentChange]
+       
+        values=[self.percentChange(records[1][i],records[0][i]) for i in range(len(records)+1)]
+        return values
 
-
-        #values=[self.percentChange(records[0][0],records[1][0]),self.percentChange(records[0][1],records[1][1]),self.percentChange(records[0][2],records[1][2])]
+    def dataForInitialPrediction(self,name):
+        self.lock.acquire()
+        mycursor = self.connection.cursor() 
+        query=f"""SELECT btc_close,btc_high,btc_low FROM {name} ORDER BY ID DESC LIMIT 2;"""
+        mycursor.execute(query,)
+        records = mycursor.fetchall()     
+        self.connection.commit()
+        mycursor.close()
+        self.lock.release()
         values=[self.percentChange(records[0][i],records[1][i]) for i in range(len(records)+1)]
-        print(values)
         return values
 
 
 
 db=dataBase()
-db.dataForPrediction('allStock')
-
+#print(db.dataForPrediction('allStock'))
 
 
 #db.createStockTable('btcusdt')
-#print(db.dataForGraph('btcusdt'))
+#
+# 
+# (db.dataForGraph('btcusdt'))
