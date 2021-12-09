@@ -5,7 +5,6 @@ import database as db
 import pretrainedModels as tm
 import modal as m
 
-
 class initializationClass:
     def __init__(self,app):
         self.app=app

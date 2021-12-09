@@ -15,9 +15,6 @@ import datetime
 import plotly
 import modal as m
 from dash.exceptions import PreventUpdate
-# import warnings
-# warnings.filterwarnings("error")
-
 
 class homepage:
     def __init__(self,database,models,modal,inputListOfImages):

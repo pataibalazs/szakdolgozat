@@ -7,7 +7,6 @@ import time
 import datetime
 from binance.client import Client
 from binance import BinanceSocketManager
-import statistics
 import database as database
 import requests
 import numpy as np

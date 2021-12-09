@@ -77,8 +77,6 @@ class dataBase:
         records = mycursor.fetchall()
         self.connection.commit()
 
-
-        
         mycursor.close()
         self.lock.release()
         return records[0][0]

@@ -2,7 +2,6 @@ import joblib
 import warnings
 import math
 import numpy as np
-#from hummingbird.ml import convert
 
 class pretrainedModels:
     def __init__(self):
@@ -12,9 +11,6 @@ class pretrainedModels:
         self.linearRegression=joblib.load('/home/balazs/preTrainedModels/linearRegression.joblib')
         self.bayesianRegression=joblib.load('/home/balazs/preTrainedModels/bayesianRegression.joblib')
         self.knnRegression=joblib.load('/home/balazs/preTrainedModels/knnRegression.joblib')
-
-        #self.betterRandomForest=convert(self.randomForest,'pytorch')
-
 
     def my_round(self,szam,erzekenyseg):
         if(szam<0 and szam<-(erzekenyseg)):

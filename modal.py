@@ -27,10 +27,8 @@ class Modal:
 
 
     def imageLoader(self,src,height):
-        
         test_base64 = base64.b64encode(open(src, 'rb').read()).decode('ascii')
         return html.Img(src='data:image/png;base64,{}'.format(test_base64),height=f"""{height}px""")
-
 
     def figInitialStyle(self):
         fig = plotly.subplots.make_subplots(rows=1, cols=1, vertical_spacing=0.2)
