@@ -15,7 +15,6 @@ import database as db
 import joblib
 import pretrainedModels as tm
 import initialisationClass as initialC
-#import financeData as fd
 #ez a warning elnyomás amiatt van itt mert egy dataframe-t várna be a predikciós modell de mi adatot adunk be neki, nem dataframe-t így az oszlopokhoz nevet kéne hozzáadni.
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning) 
