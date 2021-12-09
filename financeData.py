@@ -34,7 +34,11 @@ class financeData:
         counter=0
         self.db.deleteAllFromTemp('allStock_temp')
         while True:
+            
             candles = self.client.get_klines(symbol='BTCUSDT', interval=Client.KLINE_INTERVAL_1MINUTE)
+            print(candles[-1])
+            print(type(candles))
+            print(len(candles))
             currentStockDatas=self.stockFormatting(candles[-1])
 
             if(self.savedTime=='temp'):

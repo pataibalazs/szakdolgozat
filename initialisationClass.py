@@ -24,6 +24,7 @@ class initializationClass:
         self.homepage.gaugeRefreshCallback(self.app)
         self.homepage.updateGraphsCallback(self.app)
         self.homepage.predictionUpdateCallback(self.app)
+        
 
         
         

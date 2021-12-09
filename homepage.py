@@ -26,6 +26,7 @@ class homepage:
         self.trainedModels=models
         self.stocks=['BTC']
         self.listOfImages=inputListOfImages
+        self.currentstrat="allStrategy"
 
 
     def figInitialStyle(self):
@@ -65,17 +66,100 @@ class homepage:
             Output('decisionTree_predDiv','children'),
             Output('xgbBoost_predDiv','children'),
             Output('kneigh','children'),
-            Output('random2_predDiv','children'),
-            Output('random3_predDiv','children'),
-            Output('random4_predDiv','children')],
-            Input('pageValueRefreshTime', 'n_intervals'),
+            Output('linear','children'),
+            Output('knnreg','children'),
+            Output('bayreg','children')],
+            [Input('pageValueRefreshTime', 'n_intervals'),Input('strategy_dropdown','value')],
             State("modal", "is_open")
         )(self.predictionUpdate)
 
-    def predictionUpdate(self,n,state):
+ 
+    def predictionUpdate(self,n,strategy,state):
         gSize=220
+
+        if(self.currentstrat!=strategy and self.database.countRecords() != 1):
+
+            datas=self.database.dataForPrediction('allStock')
+            if(strategy=='aggressive'):
+                self.currentstrat='aggressive'
+                return self.imageLoader(self.listOfImages[self.trainedModels.aggressive(*datas)],270),dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update
+            if(strategy=='justClass'):
+                self.currentstrat='justClass'
+                return self.imageLoader(self.listOfImages[self.trainedModels.justClassificationHP(*datas)],270),dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update
+            if(strategy=='justReg'):
+                self.currentstrat='justReg' 
+                return self.imageLoader(self.listOfImages[self.trainedModels.justRegressionHP(*datas)],270),dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update
+            if(strategy=='allStrategy' or strategy==None):
+                self.currentstrat='allStrategy'
+                return self.imageLoader(self.listOfImages[self.trainedModels.allStrategyHP(*datas)],270),dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update
+            if(strategy==None):
+                self.currentstrat=None
+                return self.imageLoader(self.listOfImages[self.trainedModels.allStrategyHP(*datas)],270),dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update
+            if(strategy=='xgbBoost'):
+                self.currentstrat='xgbBoost'
+                return self.imageLoader(self.listOfImages[self.trainedModels.xgbBoostPrediction(*datas)[0]],270),dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update
+            if(strategy=='decisionTree'):
+                self.currentstrat='decisionTree'
+                return self.imageLoader(self.listOfImages[self.trainedModels.decisionTreePrediction(*datas)[0]],270),dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update
+            if(strategy=='kNeighbour'):
+                self.currentstrat='kNeighbour'
+                return self.imageLoader(self.listOfImages[self.trainedModels.kneighbourPrediction(*datas)[0]],270),dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update
+            if(strategy=='lin-reg'):
+                self.currentstrat='lin-reg'
+                return self.imageLoader(self.listOfImages[self.trainedModels.linearRegressionPrediction(*datas)[0]],270),dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update
+            if(strategy=='kNeighbour-reg'):
+                self.currentstrat='kNeighbour-reg'
+                return self.imageLoader(self.listOfImages[self.trainedModels.knnRegressionPrediction(*datas)[0]],270),dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update
+            if(strategy=='bay-reg'):
+                self.currentstrat='bay-reg'
+                return self.imageLoader(self.listOfImages[self.trainedModels.bayesianRegressionPrediction(*datas)[0]],270),dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update        
+            print("itt valami hiba van")
+        if(self.currentstrat!=strategy and self.database.countRecords() == 1):
+            self.currenstrat=strategy
+            datas=self.database.dataForPrediction('allStock')
+            prediction=self.trainedModels.homepagePrediction(*datas)
+            fa=self.trainedModels.decisionTreePrediction(*datas)
+            xgb=self.trainedModels.xgbBoostPrediction(*datas)
+            kneigh=self.trainedModels.kneighbourPrediction(*datas)
+            linear=self.trainedModels.linearRegressionPrediction(*datas)
+            knnreg=self.trainedModels.knnRegressionPrediction(*datas)
+            bayreg=self.trainedModels.bayesianRegressionPrediction(*datas)
+            main_pred=""
+            if(strategy=='allStrategy' or strategy==None):
+                main_pred=prediction
+            elif(strategy=='justClass'):
+                main_pred=self.trainedModels.justClassificationHP(*datas)
+            elif(strategy=='justReg'):
+                main_pred=self.trainedModels.justRegressionHP(*datas)
+            elif(strategy=='aggressive'):
+                main_pred=self.trainedModels.aggressive(*datas)
+            elif(strategy=='xgbBoost'):
+                main_pred=xgb[0]
+            elif(strategy=='decisionTree'):
+                main_pred=fa[0]
+            elif(strategy=='kNeighbour'):
+                main_pred=kneigh[0]
+            elif(strategy=='lin-reg'):
+                main_pred=linear[0]
+            elif(strategy=='kNeighbour-reg'):
+                main_pred=knnreg[0]
+            elif(strategy=='bay-reg'):
+                main_pred=bayreg[0]
+
+            return [
+                self.imageLoader(self.listOfImages[main_pred],270),
+                self.imageLoader(self.listOfImages[fa[0]],gSize),
+                self.imageLoader(self.listOfImages[xgb[0]],gSize),
+                self.imageLoader(self.listOfImages[kneigh[0]],gSize),
+                self.imageLoader(self.listOfImages[linear[0]],gSize),
+                self.imageLoader(self.listOfImages[knnreg[0]],gSize),
+                self.imageLoader(self.listOfImages[bayreg[0]],gSize),
+            ]
+
+
         returnValue='refresh' if self.database.countRecords() == 1 else 'dont-refresh'
         if(returnValue=='dont-refresh'):
+
             return dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update,dash.no_update
 
         datas=self.database.dataForPrediction('allStock')
@@ -83,15 +167,18 @@ class homepage:
         fa=self.trainedModels.decisionTreePrediction(*datas)
         xgb=self.trainedModels.xgbBoostPrediction(*datas)
         kneigh=self.trainedModels.kneighbourPrediction(*datas)
-
+        linear=self.trainedModels.linearRegressionPrediction(*datas)
+        knnreg=self.trainedModels.knnRegressionPrediction(*datas)
+        bayreg=self.trainedModels.bayesianRegressionPrediction(*datas)
+        
         return [
             self.imageLoader(self.listOfImages[prediction],270),
             self.imageLoader(self.listOfImages[fa[0]],gSize),
             self.imageLoader(self.listOfImages[xgb[0]],gSize),
             self.imageLoader(self.listOfImages[kneigh[0]],gSize),
-            self.imageLoader(self.listOfImages[prediction],gSize),
-            self.imageLoader(self.listOfImages[prediction],gSize),
-            self.imageLoader(self.listOfImages[prediction],gSize),
+            self.imageLoader(self.listOfImages[linear[0]],gSize),
+            self.imageLoader(self.listOfImages[knnreg[0]],gSize),
+            self.imageLoader(self.listOfImages[bayreg[0]],gSize),
         ]
 
     def timeUpdate(self,n):
@@ -175,16 +262,19 @@ class homepage:
     def strategyDropdownMaker(self):
         dropdown=dcc.Dropdown(id='strategy_dropdown', placeholder='pick a strategy',
                                         options=[
-                                            {'label': 'conservative', 'value': 'conservative'},
-                                            {'label': 'aggressive', 'value': 'agressive'},
-                                            {'label': 'careful', 'value': 'careful'},
-                                            {'label': 'Decision Tree', 'value': 'decisionTree'},
-                                            {'label': 'xgb Boost', 'value': 'xgbBoost'},
-                                            {'label': 'kneighbour', 'value': 'kNeighbour'},
-                                            {'label': 'just Classification', 'value': 'justClass'},
-                                            {'label': 'just Regression', 'value': 'justReg'},
-                                            {'label': 'all Strategy', 'value': 'allStrategy'}],
-                                            style={"margin-top":"25px"}
+                                            {'label': 'All Strategy', 'value': 'allStrategy'},
+                                            {'label': 'Just Regression', 'value': 'justReg'},
+                                            {'label': 'Just Classification', 'value': 'justClass'},
+                                            {'label': 'Aggressive', 'value': 'aggressive'},
+                                            {'label': 'Decision Tree Classification', 'value': 'decisionTree'},
+                                            {'label': 'XGB Boost Classification', 'value': 'xgbBoost'},
+                                            {'label': 'Kneighbour Classification', 'value': 'kNeighbour'},
+                                            {'label': 'Linear Regression', 'value': 'lin-reg'},
+                                            {'label': 'Kneighbour Regression', 'value': 'kNeighbour-reg'},
+                                            {'label': 'Bayesian Regression', 'value': 'bay-reg'}],
+                                            style={"margin-top":"25px"},
+                                            value='allStrategy'
+
                             )
         return dropdown
 
@@ -228,8 +318,14 @@ class homepage:
     
 
     def initialHomepagePrediction(self):
-        datas=self.database.dataForInitialPrediction('allStock')
+        # datas=self.database.dataForInitialPrediction('allStock')
+        # prediction=self.trainedModels.homepagePrediction(*datas)
+
+        
+        # return self.imageLoader(self.listOfImages[prediction],270)
+        datas=self.database.dataForPrediction('allStock')
         prediction=self.trainedModels.homepagePrediction(*datas)
+
         
         return self.imageLoader(self.listOfImages[prediction],270)
    
@@ -257,10 +353,10 @@ class homepage:
     
     def dbcToast(self):
         szoveg="""
-        'select date'-nél ki tudja választani hogy éppen melyik napot szeretné kirajzoltatni az értékeket a diagrammon.
-        Ennek alapértelmezett beállítása a napi mutató.
-        Ha nem akarja tovább nézni az adott napot csak X-elje ki a kiválasztott dátumot.
-        A billentyűzet nyilaival (<- és ->) képes balra és jobbra tolni a diagram értékeit.
+        Az examine stock lehetőségnél van opciója kiválasztani hogy melyik alapból betöltött valutát szeretné mélyebben megvizsgálni. A mély vizsgálat az candlestick
+        diagrammot és az egyéni modellek predikcióját jelenti. A pick strategy fülnél ki tudja választani hogy melyik stratégiát szeretné felhasználni. Ekkor a
+        főképernyőn annak a stratégiának a becslése fog megjelenni. Lehetőségek között fel vannak sorolva számos stratégiák és ezek mellett összevontak is, pl. csak klasszifikációs-, regressziós 
+        stratégiákat vegyük számításba, vegyük az összes stratégiát, vegyük az összes stratégiát de agresszívan (tehát ha valamennyire az egyik döntés felé hajlik az érték az lesz az)
         """
         t=dbc.Toast(
             [html.P(szoveg, className="mb-0")],

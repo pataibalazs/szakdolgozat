@@ -62,10 +62,13 @@ class Modal:
 
         
     def createModal(self):
-        datas=self.database.dataForInitialPrediction('allStock')
+        datas=self.database.dataForPrediction('allStock')
         fa_pred=self.trainedModels.decisionTreePrediction(*datas)
         xgb_pred=self.trainedModels.xgbBoostPrediction(*datas)
         kneigh_pred=self.trainedModels.kneighbourPrediction(*datas)
+        linear=self.trainedModels.linearRegressionPrediction(*datas)
+        knnreg=self.trainedModels.knnRegressionPrediction(*datas)
+        bay=self.trainedModels.bayesianRegressionPrediction(*datas)
 
 
         modal = html.Div([
@@ -101,20 +104,15 @@ class Modal:
 
                     ]),
                     dbc.Row([
-                    dbc.Col([dbc.Button("strategy4",style={"width":"100%",'font-weight': 'bold'},color='warning',disabled=True)],width=4),
-                    dbc.Col([dbc.Button("strategy5", style={"width": "100%",'font-weight': 'bold'},color='warning',disabled=True)],width=4),
-                    dbc.Col([dbc.Button("strategy6",style={"width":"100%",'font-weight': 'bold'},color='warning',disabled=True)],width=4),
+                    dbc.Col([dbc.Button("Linear Regression",style={"width":"100%",'font-weight': 'bold'},color='warning',disabled=True)],width=4),
+                    dbc.Col([dbc.Button("KNN Regression", style={"width": "100%",'font-weight': 'bold'},color='warning',disabled=True)],width=4),
+                    dbc.Col([dbc.Button("Bayesian Regression",style={"width":"100%",'font-weight': 'bold'},color='warning',disabled=True)],width=4),
                     ]),
                     html.Br(),
                     dbc.Row([
-                    dbc.Col([html.Div(id='random2_predDiv',children=self.imageLoader(self.listOfImages[fa_pred[0]],220))],width=4),
-                    dbc.Col([html.Div(id='random3_predDiv',children=self.imageLoader(self.listOfImages[fa_pred[0]],220))],width=4),
-                    dbc.Col([html.Div(id='random4_predDiv',children=self.imageLoader(self.listOfImages[fa_pred[0]],220))],width=4),
-                    ]),
-                    dbc.Row([
-                    dbc.Col([dbc.Button("pred value1",style={"width":"100%"})],width=4),
-                    dbc.Col([dbc.Button("pred value2", style={"width": "100%"})],width=4),
-                    dbc.Col([dbc.Button("pred value3",style={"width":"100%"})],width=4),
+                    dbc.Col([html.Div(id='linear',children=self.imageLoader(self.listOfImages[linear[0]],220))],width=4),
+                    dbc.Col([html.Div(id='knnreg',children=self.imageLoader(self.listOfImages[knnreg[0]],220))],width=4),
+                    dbc.Col([html.Div(id='bayreg',children=self.imageLoader(self.listOfImages[bay[0]],220))],width=4),
                     ]),
                 ]),
                 dbc.ModalFooter(
@@ -150,3 +148,4 @@ class Modal:
 
     def clearDropdown(self,n):
         return None
+

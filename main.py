@@ -21,7 +21,7 @@ import initialisationClass as initialC
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning) 
 
-
+    
 app=dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP],suppress_callback_exceptions = True)
 init = initialC.initializationClass(app)
 init.callbackStarter()
